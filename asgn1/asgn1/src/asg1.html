@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>CSE160 Assignment 1 – Paint Program</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    canvas {
+      border: 1px solid #999;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .controls {
+      margin-bottom: 10px;
+    }
+
+    .controls label {
+      margin-right: 4px;
+    }
+
+    .controls input {
+      margin-right: 12px;
+    }
+
+    .controls button {
+      margin-right: 6px;
+    }
+  </style>
+</head>
+
+<body onload="main()">
+
+  <h2>CSE 160 – Assignment 1: Christian Reyes-Moreno</h2>
+
+  <div class="controls">
+    <label>R</label>
+    <input type="range" id="rSlide" min="0" max="100" value="100">
+
+    <label>G</label>
+    <input type="range" id="gSlide" min="0" max="100" value="0">
+
+    <label>B</label>
+    <input type="range" id="bSlide" min="0" max="100" value="0">
+
+    <label>Size</label>
+    <input type="range" id="sizeSlide" min="1" max="40" value="10">
+
+    <label>Segments</label>
+    <input type="range" id="segSlide" min="3" max="50" value="12">
+
+    <br><br>
+
+    <button id="pointButton">Point</button>
+    <button id="triButton">Triangle</button>
+    <button id="circleButton">Circle</button>
+
+    <button id="clearButton">Clear Canvas</button>
+    <button id="pictureButton">Draw Picture</button>
+  </div>
+
+ 
+  <canvas id="webgl" width="400" height="400">
+    Please use a browser that supports canvas.
+  </canvas>
+
+  
+  <h3>Reference Sketch</h3>
+  <p>
+    Below is the hand-drawn sketch used as a reference for the triangle-based scene.
+    The fish, scenery, initials (CR), and underwater elements were recreated using
+    WebGL triangles.
+  </p>
+
+  
+  <img src="IMG_0639.JPG" alt="Reference sketch" width="400" style="transform: rotate(270deg);">>
+
+  
+  <script src="../lib/webgl-utils.js"></script>
+  <script src="../lib/webgl-debug.js"></script>
+  <script src="../lib/cuon-utils.js"></script>
+
+  
+  <script src="./Triangle.js"></script>
+  <script src="./Circle.js"></script>
+
+
+  <script src="./asg1.js"></script>
+
+</body>
+</html>
