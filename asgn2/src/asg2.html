@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>3D Animated Peacock</title>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 20px; 
+            font-family: Arial, sans-serif; 
+            background: linear-gradient(to bottom, #87CEEB, #98D8E8); 
+        }
+        canvas { 
+            border: 1px solid #ccc; 
+            display: block; 
+            margin: 20px auto; 
+            background: white; 
+        }
+        .controls { 
+            max-width: 800px; 
+            margin: 0 auto; 
+        }
+        .control-group { 
+            margin: 15px 0; 
+            padding: 10px; 
+            background: rgba(255,255,255,0.9); 
+            border-radius: 5px; 
+        }
+        .control-group label { 
+            display: inline-block; 
+            width: 200px; 
+            font-weight: bold; 
+        }
+        input[type="range"] { 
+            width: 300px; 
+        }
+        button { 
+            padding: 10px 20px; 
+            margin: 5px; 
+            cursor: pointer; 
+            font-size: 14px; 
+            background: #4CAF50; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+        }
+        button:hover { 
+            background: #45a049; 
+        }
+        .value { 
+            display: inline-block; 
+            width: 50px; 
+            text-align: right; 
+        }
+        h2 { 
+            text-align: center; 
+            color: #2c3e50; 
+        }
+        /* Performance indicator styles */
+        .performance-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            min-width: 200px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+        .performance-indicator h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            color: #4CAF50;
+            text-align: center;
+        }
+        .perf-stat {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            padding: 3px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .perf-label {
+            color: #aaa;
+        }
+        .perf-value {
+            font-weight: bold;
+        }
+        .fps-good { color: #4CAF50; }
+        .fps-ok { color: #FFC107; }
+        .fps-bad { color: #F44336; }
+    </style>
+</head>
+<body>
+    <h2>3D Animated Peacock - His name is Ronald</h2>
+    <p style="text-align: center; color: #34495e; font-size: 16px; margin-top: -10px;">by Christian Reyes-Moreno</p>
+    <p style="text-align: center; color: #7f8c8d; font-size: 14px; margin-top: -15px;">CSE 160</p>
+    
+    
+    <div class="performance-indicator">
+        <h3>⚡ Performance</h3>
+        <div class="perf-stat">
+            <span class="perf-label">FPS:</span>
+            <span class="perf-value" id="fps">0</span>
+        </div>
+        <div class="perf-stat">
+            <span class="perf-label">Frame Time:</span>
+            <span class="perf-value" id="frameTime">0 ms</span>
+        </div>
+        <div class="perf-stat">
+            <span class="perf-label">Draw Calls:</span>
+            <span class="perf-value" id="drawCalls">0</span>
+        </div>
+        <div class="perf-stat">
+            <span class="perf-label">Vertices:</span>
+            <span class="perf-value" id="vertices">0</span>
+        </div>
+    </div>
+    
+    <canvas id="webgl" width="800" height="600"></canvas>
+    
+    <div class="controls">
+        <div class="control-group">
+            <label>Global Rotation:</label>
+            <input type="range" id="globalRotation" min="0" max="360" value="30">
+            <span class="value" id="globalRotationValue">30</span>°
+        </div>
+        
+        <div class="control-group">
+            <label>Tail Fan (Open/Close):</label>
+            <input type="range" id="tailFan" min="0" max="120" value="60">
+            <span class="value" id="tailFanValue">60</span>°
+        </div>
+        
+        <div class="control-group">
+            <label>Tail Feather 1:</label>
+            <input type="range" id="feather1" min="-30" max="30" value="0">
+            <span class="value" id="feather1Value">0</span>°
+        </div>
+        
+        <div class="control-group">
+            <label>Tail Feather 2:</label>
+            <input type="range" id="feather2" min="-30" max="30" value="0">
+            <span class="value" id="feather2Value">0</span>°
+        </div>
+        
+        <div class="control-group">
+            <label>Neck Bend:</label>
+            <input type="range" id="neckBend" min="-45" max="45" value="10">
+            <span class="value" id="neckBendValue">10</span>°
+        </div>
+        
+        <div class="control-group">
+            <label>Head Tilt:</label>
+            <input type="range" id="headTilt" min="-30" max="30" value="0">
+            <span class="value" id="headTiltValue">0</span>°
+        </div>
+        
+        <div class="control-group">
+            <label>Right Leg:</label>
+            <input type="range" id="rightLeg" min="-45" max="45" value="0">
+            <span class="value" id="rightLegValue">0</span>°
+        </div>
+        
+        <div class="control-group">
+            <button id="animateBtn">Start Animation</button>
+            <button id="resetBtn">Reset Pose</button>
+        </div>
+    </div>
+
+   
+    <script type="text/javascript" src="../lib/webgl-utils.js"></script>
+    <script type="text/javascript" src="../lib/webgl-debug.js"></script>
+    <script type="text/javascript" src="../lib/cuon-utils.js"></script>
+    <script type="text/javascript" src="../lib/cuon-matrix-cse160.js"></script>
+    
+    
+    <script type="text/javascript" src="asg2.js"></script>
+</body>
+</html>

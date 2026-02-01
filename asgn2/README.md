@@ -1,8 +1,1 @@
-# CSE-160
-# CSE-160
-# CSE-160
-# CSE-160
-# CSE-160
-# CSE-160
-# CSE-160
-# CSE-160
+# I used ChatGPT to help me debug and make the interface a bit nicer I don't #really know how to use the .html to make pretty or nicer interfaces so I used #chat to help me out. I also used ChatGPT to help me debug and help with the #file structure
