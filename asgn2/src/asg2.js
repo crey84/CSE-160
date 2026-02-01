@@ -1,4 +1,4 @@
-// Vertex shader program
+
 var VSHADER_SOURCE = 
     'attribute vec4 a_Position;\n' +
     'attribute vec4 a_Color;\n' +
@@ -10,7 +10,7 @@ var VSHADER_SOURCE =
     '    v_Color = a_Color;\n' +
     '}\n';
 
-// Fragment shader program
+
 var FSHADER_SOURCE = 
     'precision mediump float;\n' +
     'varying vec4 v_Color;\n' +
@@ -18,13 +18,13 @@ var FSHADER_SOURCE =
     '    gl_FragColor = v_Color;\n' +
     '}\n';
 
-// Global variables
+
 var gl;
 var canvas;
 var u_GlobalRotation;
 var u_ModelMatrix;
 
-// Joint angle variables
+
 var g_globalRotation = 30;
 var g_tailFan = 60;
 var g_feather1 = 0;
@@ -33,12 +33,12 @@ var g_neckBend = 10;
 var g_headTilt = 0;
 var g_rightLeg = 0;
 
-// Animation variables
+
 var g_animating = false;
 var g_time = 0;
 var g_animationId = null;
 
-// Performance tracking variables
+
 var g_frameCount = 0;
 var g_lastFpsUpdate = 0;
 var g_fps = 0;
@@ -50,7 +50,7 @@ var g_lastFrameTime = 0;
 function main() {
     console.log("main() called");
     
-    // Retrieve <canvas> element
+    
     canvas = document.getElementById('webgl');
     if (!canvas) {
         console.log('Failed to retrieve the <canvas> element');
@@ -58,7 +58,7 @@ function main() {
     }
     console.log("Canvas found");
 
-    // Get the rendering context for WebGL
+    
     gl = getWebGLContext(canvas);
     if (!gl) {
         console.log('Failed to get the rendering context for WebGL');
@@ -66,14 +66,14 @@ function main() {
     }
     console.log("WebGL context obtained");
 
-    // Initialize shaders
+    
     if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
         console.log('Failed to initialize shaders.');
         return;
     }
     console.log("Shaders initialized");
 
-    // Get the storage locations of uniform variables
+    
     u_GlobalRotation = gl.getUniformLocation(gl.program, 'u_GlobalRotation');
     u_ModelMatrix = gl.getUniformLocation(gl.program, 'u_ModelMatrix');
     
@@ -85,27 +85,27 @@ function main() {
     }
     console.log("Uniform locations retrieved");
 
-    // Enable depth test
+    
     gl.enable(gl.DEPTH_TEST);
 
-    // Set clear color
+    
     gl.clearColor(0.95, 0.97, 1.0, 1.0);
 
-    // Set up UI event handlers
+    
     setupUI();
     console.log("UI setup complete");
 
-    // Initialize performance tracking
+    
     g_lastFpsUpdate = Date.now();
     g_lastFrameTime = Date.now();
 
-    // Draw the scene
+    
     renderScene();
     console.log("First render complete");
 }
 
 function setupUI() {
-    // Setup sliders
+    
     var sliders = ['globalRotation', 'tailFan', 'feather1', 'feather2', 'neckBend', 'headTilt', 'rightLeg'];
     
     sliders.forEach(function(id) {
@@ -133,7 +133,7 @@ function setupUI() {
         });
     });
 
-    // Animation button
+    
     document.getElementById('animateBtn').addEventListener('click', function(e) {
         g_animating = !g_animating;
         e.target.textContent = g_animating ? 'Stop Animation' : 'Start Animation';
@@ -147,7 +147,7 @@ function setupUI() {
         }
     });
 
-    // Reset button
+    
     document.getElementById('resetBtn').addEventListener('click', function() {
         g_globalRotation = 30;
         g_tailFan = 60;
