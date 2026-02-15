@@ -1,8 +1,1 @@
-# CSE-160
-# CSE-160
-# CSE-160
-# CSE-160
-# CSE-160
-# CSE-160
-# CSE-160
-# CSE-160
+I used chatgpt to help me deubug my code, and get help with setting up the camera and world matrix also with the UI. Furthermore I used AI to explain concepts to me and understand kind of the flow of things.
