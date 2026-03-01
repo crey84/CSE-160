@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Assignment 4</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0d0d1a;
+      color: #ccd;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    h2 { margin: 14px 0 2px; font-size:20px; color:#aaf; letter-spacing:2px; }
+    p.sub { font-size:12px; color:#667; margin-bottom:10px; }
+
+    #layout { display:flex; gap:16px; align-items:flex-start; padding: 0 20px 20px; }
+
+    canvas { border:1px solid #223; background:#111; display:block; }
+
+    #panel {
+      width:260px; background:#111522; border:1px solid #1e2a4a;
+      border-radius:8px; padding:12px; display:flex; flex-direction:column; gap:10px;
+      max-height:650px; overflow-y:auto;
+    }
+    .sec { border:1px solid #1a2545; border-radius:5px; padding:8px; }
+    .sec h3 { font-size:10px; letter-spacing:2px; color:#4466aa; text-transform:uppercase; margin-bottom:7px; }
+    label { font-size:10px; color:#889; display:block; margin-bottom:1px; }
+    input[type=range] { width:100%; accent-color:#4477cc; margin-bottom:5px; height:14px; }
+    button {
+      width:100%; padding:6px; font-size:10px; letter-spacing:1px; text-transform:uppercase;
+      background:#151b30; border:1px solid #2a3a6a; color:#778; cursor:pointer;
+      border-radius:3px; transition:background 0.2s,color 0.2s; margin-bottom:3px;
+    }
+    button:hover { background:#1e2a4a; color:#aac; }
+    button.active { background:#1a2545; border-color:#5577cc; color:#99ccff; }
+    .info { font-size:9px; color:#445; line-height:1.7; }
+    #objInfo { font-size:9px; color:#557; margin-top:4px; }
+    input[type=file] { font-size:9px; color:#556; width:100%; margin-top:2px; }
+
+    #perf {
+      position:fixed; top:12px; right:12px;
+      background:rgba(0,0,0,0.75); color:#8af; padding:10px 14px;
+      border-radius:6px; font-family:monospace; font-size:11px;
+      line-height:1.9; z-index:99;
+    }
+    #perf span { color:#eee; }
+  </style>
+</head>
+<body>
+<h2>Ronald the Peacock with Lighting!</h2>
+<p class="sub">Assignment 4 &nbsp;|&nbsp; Christian Reyes-Moreno &nbsp;|&nbsp; CSE 160</p>
+
+<div id="layout">
+  <canvas id="webgl" width="720" height="560"></canvas>
+
+  <div id="panel">
+
+    <div class="sec">
+      <h3>Render Modes</h3>
+      <button id="btnLighting" class="active" onclick="toggleLighting()"> Lighting: ON</button>
+      <button id="btnNormals"  onclick="toggleNormals()"> Normals VIZ: OFF</button>
+    </div>
+
+    <div class="sec">
+      <h3>Point Light</h3>
+      <label>Orbit Angle</label>
+      <input type="range" id="slLightAngle" min="0" max="360" value="0"
+             oninput="g_lightAngle=+this.value*Math.PI/180; if(!g_animating)renderScene()">
+      <label>Height</label>
+      <input type="range" id="slLightY" min="-1" max="4" step="0.05" value="1.5"
+             oninput="g_lightY=+this.value; if(!g_animating)renderScene()">
+      <label>Orbit Radius</label>
+      <input type="range" id="slLightR" min="0.5" max="4" step="0.05" value="2"
+             oninput="g_lightR=+this.value; if(!g_animating)renderScene()">
+      <label>Light R</label>
+      <input type="range" id="slLR" min="0" max="1" step="0.01" value="1.0"
+             oninput="g_lightColor[0]=+this.value; if(!g_animating)renderScene()">
+      <label>Light G</label>
+      <input type="range" id="slLG" min="0" max="1" step="0.01" value="0.95"
+             oninput="g_lightColor[1]=+this.value; if(!g_animating)renderScene()">
+      <label>Light B</label>
+      <input type="range" id="slLB" min="0" max="1" step="0.01" value="0.8"
+             oninput="g_lightColor[2]=+this.value; if(!g_animating)renderScene()">
+      <button id="btnLight1" class="active" onclick="toggleLight1()">Point Light: ON</button>
+      <button id="btnLightAnim" class="active" onclick="toggleLightAnim()">Auto-Orbit: ON</button>
+    </div>
+
+    <div class="sec">
+      <h3>Spot Light</h3>
+      <label>Spot X</label>
+      <input type="range" id="slSX" min="-3" max="3" step="0.05" value="0"
+             oninput="g_spotPos[0]=+this.value; if(!g_animating)renderScene()">
+      <label>Spot Y</label>
+      <input type="range" id="slSY" min="0.5" max="5" step="0.05" value="3"
+             oninput="g_spotPos[1]=+this.value; if(!g_animating)renderScene()">
+      <label>Spot Z</label>
+      <input type="range" id="slSZ" min="-3" max="3" step="0.05" value="0"
+             oninput="g_spotPos[2]=+this.value; if(!g_animating)renderScene()">
+      <label>Cutoff Angle (°)</label>
+      <input type="range" id="slCutoff" min="3" max="60" value="18"
+             oninput="g_spotCutoff=+this.value; if(!g_animating)renderScene()">
+      <label>Spot R</label>
+      <input type="range" id="slSR" min="0" max="1" step="0.01" value="0.3"
+             oninput="g_spotColor[0]=+this.value; if(!g_animating)renderScene()">
+      <label>Spot G</label>
+      <input type="range" id="slSG" min="0" max="1" step="0.01" value="0.5"
+             oninput="g_spotColor[1]=+this.value; if(!g_animating)renderScene()">
+      <label>Spot B</label>
+      <input type="range" id="slSB" min="0" max="1" step="0.01" value="1.0"
+             oninput="g_spotColor[2]=+this.value; if(!g_animating)renderScene()">
+      <button id="btnLight2" class="active" onclick="toggleLight2()">Spot Light: ON</button>
+    </div>
+
+    <div class="sec">
+      <h3>Camera</h3>
+      <label>Rotate Y</label>
+      <input type="range" id="slCamY" min="0" max="360" value="30"
+             oninput="g_camY=+this.value; if(!g_animating)renderScene()">
+      <label>Rotate X (tilt)</label>
+      <input type="range" id="slCamX" min="-70" max="70" value="-15"
+             oninput="g_camX=+this.value; if(!g_animating)renderScene()">
+    </div>
+
+    <div class="sec">
+      <h3>Ronald's Pose</h3>
+      <label>Tail Fan</label>
+      <input type="range" id="tailFan" min="0" max="120" value="60"
+             oninput="g_tailFan=+this.value; if(!g_animating)renderScene()">
+      <label>Neck Bend</label>
+      <input type="range" id="neckBend" min="-45" max="45" value="10"
+             oninput="g_neckBend=+this.value; if(!g_animating)renderScene()">
+      <label>Head Tilt</label>
+      <input type="range" id="headTilt" min="-30" max="30" value="0"
+             oninput="g_headTilt=+this.value; if(!g_animating)renderScene()">
+      <label>Right Leg</label>
+      <input type="range" id="rightLeg" min="-45" max="45" value="0"
+             oninput="g_rightLeg=+this.value; if(!g_animating)renderScene()">
+      <button id="animateBtn" onclick="toggleAnimation()">▶ Start Animation</button>
+      <button onclick="resetPose()">↺ Reset Pose</button>
+    </div>
+
+    <div class="sec">
+      <h3>OBJ Model</h3>
+      <input type="file" id="objFile" accept=".obj" onchange="loadOBJFile(event)">
+      <div id="objInfo" class="info">Load a .obj file to add it to the scene.</div>
+    </div>
+
+    <div class="info">
+      Drag sliders · Press P to toggle pose anim<br>
+      Spheres always visible for lighting check
+    </div>
+  </div>
+</div>
+
+<div id="perf">
+  FPS: <span id="fpsVal">0</span>&nbsp;&nbsp;
+  Draw calls: <span id="dcVal">0</span>
+</div>
+
+
+<script id="vs" type="x-shader/x-vertex">
+attribute vec3 a_Position;
+attribute vec3 a_Normal;
+
+uniform mat4 u_MvpMatrix;
+uniform mat4 u_ModelMatrix;
+uniform mat3 u_NormalMatrix;
+
+varying vec3 v_WorldPos;
+varying vec3 v_Normal;
+
+void main(){
+  vec4 worldPos = u_ModelMatrix * vec4(a_Position, 1.0);
+  v_WorldPos = worldPos.xyz;
+  v_Normal   = normalize(u_NormalMatrix * a_Normal);
+  gl_Position = u_MvpMatrix * vec4(a_Position, 1.0);
+}
+</script>
+
+
+<script id="fs" type="x-shader/x-fragment">
+precision mediump float;
+
+varying vec3 v_WorldPos;
+varying vec3 v_Normal;
+
+uniform vec3  u_LightPos;
+uniform vec3  u_LightColor;
+uniform bool  u_Light1On;
+
+uniform vec3  u_SpotPos;
+uniform vec3  u_SpotDir;
+uniform float u_SpotCutoff;
+uniform vec3  u_SpotColor;
+uniform bool  u_Light2On;
+
+uniform vec3  u_CamPos;
+uniform vec3  u_BaseColor;
+uniform bool  u_LightingOn;
+uniform bool  u_NormalsOn;
+
+vec3 phongContrib(vec3 N, vec3 L, vec3 V, vec3 lCol){
+  float diff = max(dot(N, L), 0.0);
+  vec3  R    = reflect(-L, N);
+  float spec = pow(max(dot(V, R), 0.0), 32.0);
+  vec3  amb  = 0.12 * lCol * u_BaseColor;
+  vec3  di   = 0.75 * diff * lCol * u_BaseColor;
+  vec3  sp   = 0.5  * spec * lCol;
+  return amb + di + sp;
+}
+
+void main(){
+  if(u_NormalsOn){
+    gl_FragColor = vec4(normalize(v_Normal)*0.5+0.5, 1.0);
+    return;
+  }
+  if(!u_LightingOn){
+    gl_FragColor = vec4(u_BaseColor, 1.0);
+    return;
+  }
+
+  vec3 N = normalize(v_Normal);
+  vec3 V = normalize(u_CamPos - v_WorldPos);
+  vec3 color = 0.08 * u_BaseColor;
+
+  if(u_Light1On){
+    vec3 L = normalize(u_LightPos - v_WorldPos);
+    color += phongContrib(N, L, V, u_LightColor);
+  }
+  if(u_Light2On){
+    vec3 L = normalize(u_SpotPos - v_WorldPos);
+    float cosA = dot(-L, normalize(u_SpotDir));
+    if(cosA > u_SpotCutoff){
+      float spot = pow(cosA, 8.0);
+      color += spot * phongContrib(N, L, V, u_SpotColor);
+    }
+  }
+
+  gl_FragColor = vec4(clamp(color,0.0,1.0), 1.0);
+}
+</script>
+
+
+<script src="../lib/webgl-utils.js"></script>
+<script src="../lib/webgl-debug.js"></script>
+<script src="../lib/cuon-utils.js"></script>
+<script src="../lib/cuon-matrix-cse160.js"></script>
+
+
+<script src="../src/asg4.js"></script>
+
+</body>
+</html>

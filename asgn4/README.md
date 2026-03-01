@@ -1,0 +1,2 @@
+# CSE-160
+# In this assigment I used AI to help me add shaders to my already existing assignment Ronald the peacock. I used AI to help me debug and help me code. I also used AI to help me with the formatting of my website, to make it look more interactive and appealing. 
