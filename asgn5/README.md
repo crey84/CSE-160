@@ -1,8 +1,2 @@
 # CSE-160
-# CSE-160
-# CSE-160
-# CSE-160
-# CSE-160
-# CSE-160
-# CSE-160
-# CSE-160
+# In this assigment I used AI to help me code in three.js, I had AI help me debug and come up with a nice presentable interface. I also used AI to help me come up with a way to add a 3-d model I found on the internet and help me site it correctly as well. Which I have included in the zip as well! and gave credit for in my html.
